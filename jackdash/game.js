@@ -6,7 +6,10 @@ var line;
 var graphics;
 var circle;
 var rect;
-var cursors;
+var rectx = 0; 
+var recty = 0;
+var staticGraphics;
+
 
 var mainState = {
     preload: preload,
@@ -35,12 +38,17 @@ function create(){
     // Since we'll update the moving lines every frame, we only draw to this in our update function.
     graphics = game.add.graphics( (game.world.width / 2.0) - 200, game.world.height);
 
+    rect = game.add.graphics( (game.world.width / 2.0) - 200, game.world.height);
+    /*game.physics.arcade.enable(rect);*/
+
     //Create a second graphics object to draw a floating circle in the upper left, for demonstration. 
     //  Since we're not dynamically updaing this, we can draw to it in our "create" function.
     staticGraphics = game.add.graphics(  150, 150);
 
+
     //Draw a 2px wide line, red, fully transparent
     staticGraphics.lineStyle(2.0, 0xff0000, 1.0);
+
 
     //Fill our shape with a medium red
     staticGraphics.beginFill(0x660000);
@@ -48,15 +56,11 @@ function create(){
     //Draw a circle
     circle = staticGraphics.drawCircle(170, 290, 50);
     staticGraphics.endFill();
+   /* game.physics.arcade.enable(staticGraphics);*/
 
 
-    //NOTE: DOES NOT WORK... trying to make the edges so when the circle touches it "falls" and goes back to the start
-    /*staticGraphics.beginFill(0xff0000);
-
-
-    //Draw a rectagle
-    rect = staticGraphics.drawRect(170, 290, 50);
-    staticGraphics.endFill();*/
+    //reference to drawing shapes
+    //edge = staticGraphics.drawRect(370, 290, 50, 100);*/
 
 
 
@@ -77,30 +81,25 @@ function update(){
         offset -= 1.0;
     }    
 
-   
-    //to move sprite left ad right
+
+
+    //to move sprite left and right
 
        if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT))
     {
-        circle.x -= 4;
+        circle.x -= 4.0;
     }
     else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT))
     {
-        circle.x += 4;
+        circle.x += 4.0;
     }
 
+   //if circle goes off the track
 
+    if (circle.x < -50 || circle.x > 350){
 
-
-   /* //if circle goes off the track
-    if (staticGraphics.drawCircle(100, 290, 50)){
-        cricle.destroy();
+        circle.destroy();
     }
-    else if (none)
-        -*/
-    /*}*/
-
-
 
     // Limit offset to 20px max
     offset = offset % 20;
@@ -139,5 +138,28 @@ function update(){
         graphics.moveTo(lineOffset, -lineOffset);
         graphics.lineTo((400 - lineOffset), -lineOffset);
     }
+
+    rect.clear();
+
+    rect.lineStyle(2.0, 0x15c2d6, 1.0);
+
+    rect.beginFill(0x15c2d6);
+
+    recty = recty + 1;
+
+    rectx = rectx + (Math.random()* 3 - 2);
+
+    rect.drawRect(190 + rectx, -200 + recty, 20, 20);
+
+
+    game.physics.arcade.collide(rect, staticGraphics, collisionHandler);
+
  
 }
+
+    //NOTE: Doesn't Work... FIX
+
+    function collisionHandler (){
+        /*game.physics.arcade.collide(rect, staticGraphics);*/
+        console.log ("hello");
+    }
