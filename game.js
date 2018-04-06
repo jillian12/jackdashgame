@@ -8,7 +8,7 @@ var circle;
 var rect;
 var rectx = 0; 
 var recty = 0;
-var staticGraphics;
+var player;
 
 
 var mainState = {
@@ -43,24 +43,24 @@ function create(){
 
     //Create a second graphics object to draw a floating circle in the upper left, for demonstration. 
     //  Since we're not dynamically updaing this, we can draw to it in our "create" function.
-    staticGraphics = game.add.graphics(  150, 150);
+    player = game.add.graphics(  150, 150);
 
 
     //Draw a 2px wide line, red, fully transparent
-    staticGraphics.lineStyle(2.0, 0xff0000, 1.0);
+    player.lineStyle(2.0, 0xff0000, 1.0);
 
 
     //Fill our shape with a medium red
-    staticGraphics.beginFill(0x660000);
+    player.beginFill(0x660000);
 
     //Draw a circle
-    circle = staticGraphics.drawCircle(170, 290, 50);
-    staticGraphics.endFill();
-   /* game.physics.arcade.enable(staticGraphics);*/
+    circle = player.drawCircle(170, 290, 50);
+    player.endFill();
+   /* game.physics.arcade.enable(player);*/
 
 
     //reference to drawing shapes
-    //edge = staticGraphics.drawRect(370, 290, 50, 100);*/
+    //edge = player.drawRect(370, 290, 50, 100);*/
 
 
 
@@ -152,7 +152,7 @@ function update(){
     rect.drawRect(190 + rectx, -200 + recty, 20, 20);
 
 
-    game.physics.arcade.collide(rect, staticGraphics, collisionHandler);
+    game.physics.arcade.collide(rect, player, collisionHandler);
 
  
 }
@@ -160,6 +160,6 @@ function update(){
     //NOTE: Doesn't Work... FIX
 
     function collisionHandler (){
-        /*game.physics.arcade.collide(rect, staticGraphics);*/
+        /*game.physics.arcade.collide(rect, player);*/
         console.log ("hello");
     }
