@@ -1,2 +1,2 @@
 # jackdashgame
-Edited version of jackdash
+Jackdash! A game by Jillian, Christine and Ivan
