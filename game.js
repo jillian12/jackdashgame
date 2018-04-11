@@ -5,16 +5,38 @@ var game;
 var line;
 var graphics;
 var circle;
-var rect;
-var rectx = 0; 
-var recty = 0;
 var player;
+var enemies = [];
 
 
 var mainState = {
     preload: preload,
     create: create,
     update: update
+};
+
+var enemy = {
+    shape: 0,
+    speed: 1,
+    game: 0,
+    setup: function(game){
+        this.shape = game.add.graphics( (game.world.width / 2.0), game.world.height / 2.0 + 40);
+        game.physics.arcade.enable(this.shape);
+        this.shape.body.width = 20;
+        this.shape.body.height = 20;
+        this.game = game;
+    },
+    update: function(){
+        this.shape.y = this.shape.y + 1;
+        this.shape.x = this.shape.x + (Math.random()* 3 - 2);
+    },
+    draw: function(){
+        this.shape.clear();
+        this.shape.lineStyle(2.0, 0x15c2d6, 1.0);
+        this.shape.beginFill(0x15c2d6,0.5);
+        this.shape.drawRect(0 , 0 , 20, 20);
+        game.debug.body(this.shape);
+    }
 };
 
 // Initialize Phaser
@@ -38,11 +60,7 @@ function create(){
     // Since we'll update the moving lines every frame, we only draw to this in our update function.
     graphics = game.add.graphics( (game.world.width / 2.0) - 200, game.world.height);
 
-    rect = game.add.graphics( (game.world.width / 2.0), game.world.height / 2.0 + 40);
-    game.physics.arcade.enable(rect);
-    rect.body.width = 20;
-    rect.body.height = 20;
-    /*game.physics.arcade.enable(rect);*/
+    
 
     //Create a second graphics object to draw a floating circle in the upper left, for demonstration. 
     //  Since we're not dynamically updaing this, we can draw to it in our "create" function.
@@ -67,14 +85,6 @@ function create(){
     player.endFill();
    /* game.physics.arcade.enable(player);*/
 
-
-    //reference to drawing shapes
-    //edge = player.drawRect(370, 290, 50, 100);*/
-
-
-
-    
-
 }
 
 //We'll use the offset variable to keep track of how much we move each vertical line
@@ -82,6 +92,11 @@ var offset = 0;
 
 function update(){
 
+    if (Math.random() < .01){
+    enemy1 = Object.create(enemy);
+    enemy1.setup(game);
+    enemies.push(enemy1);
+    }
     //Hold down the "r" key to reverse the line movement
     if (game.input.keyboard.isDown(Phaser.Keyboard.R)){
         offset += 1.0;
@@ -94,7 +109,7 @@ function update(){
 
     //to move sprite left and right
 
-       if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT))
+    if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT))
     {
         player.x -= 4.0;
     }
@@ -148,31 +163,18 @@ function update(){
         graphics.lineTo((400 - lineOffset), -lineOffset);
     }
 
-    rect.clear();
+    for(i = 0; i < enemies.length; i ++){
+        enemies[i].update();
+        enemies[i].draw();
+        game.physics.arcade.overlap(enemies[i].shape, player, collisionHandler);
+    }
 
-    rect.lineStyle(2.0, 0x15c2d6, 1.0);
-
-    rect.beginFill(0x15c2d6,0.5);
-
-    
-    rect.y = rect.y + 1;
-    rect.x = rect.x + (Math.random()* 3 - 2);
-
-    rect.drawRect(0 , 0 , 20, 20);
-    //rect.drawRect(0 + rectx, 0 + recty, 20, 20);
-
-
-    game.debug.body(rect);
     game.debug.body(player);
-    game.physics.arcade.overlap(rect, player, collisionHandler);
 
  
 }
 
-    //NOTE: Doesn't Work... FIX
-
     function collisionHandler (){
-        /*game.physics.arcade.collide(rect, player);*/
         console.log ("hello");
         player.destroy()
     }
