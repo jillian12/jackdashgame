@@ -38,12 +38,21 @@ function create(){
     // Since we'll update the moving lines every frame, we only draw to this in our update function.
     graphics = game.add.graphics( (game.world.width / 2.0) - 200, game.world.height);
 
-    rect = game.add.graphics( (game.world.width / 2.0) - 200, game.world.height);
+    rect = game.add.graphics( (game.world.width / 2.0), game.world.height / 2.0 + 40);
+    game.physics.arcade.enable(rect);
+    rect.body.width = 20;
+    rect.body.height = 20;
     /*game.physics.arcade.enable(rect);*/
 
     //Create a second graphics object to draw a floating circle in the upper left, for demonstration. 
     //  Since we're not dynamically updaing this, we can draw to it in our "create" function.
-    player = game.add.graphics(  150, 150);
+    player = game.add.graphics( 320, 440);
+    game.physics.arcade.enable(player);
+    player.body.width = 50;
+    player.body.height = 50;
+    player.body.isCircle = true;
+    player.body.offset.x = -25;
+    player.body.offset.y = -25;
 
 
     //Draw a 2px wide line, red, fully transparent
@@ -51,10 +60,10 @@ function create(){
 
 
     //Fill our shape with a medium red
-    player.beginFill(0x660000);
+    player.beginFill(0x660000,0.5);
 
     //Draw a circle
-    circle = player.drawCircle(170, 290, 50);
+    circle = player.drawCircle(0, 0, 50);
     player.endFill();
    /* game.physics.arcade.enable(player);*/
 
@@ -143,16 +152,19 @@ function update(){
 
     rect.lineStyle(2.0, 0x15c2d6, 1.0);
 
-    rect.beginFill(0x15c2d6);
+    rect.beginFill(0x15c2d6,0.5);
 
-    recty = recty + 1;
+    
+    rect.y = rect.y + 1;
+    rect.x = rect.x + (Math.random()* 3 - 2);
 
-    rectx = rectx + (Math.random()* 3 - 2);
+    rect.drawRect(0 , 0 , 20, 20);
+    //rect.drawRect(0 + rectx, 0 + recty, 20, 20);
 
-    rect.drawRect(190 + rectx, -200 + recty, 20, 20);
 
-
-    game.physics.arcade.collide(rect, player, collisionHandler);
+    game.debug.body(rect);
+    game.debug.body(player);
+    game.physics.arcade.overlap(rect, player, collisionHandler);
 
  
 }
@@ -162,4 +174,5 @@ function update(){
     function collisionHandler (){
         /*game.physics.arcade.collide(rect, player);*/
         console.log ("hello");
+        player.destroy()
     }
