@@ -96,18 +96,18 @@ function update(){
 
        if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT))
     {
-        circle.x -= 4.0;
+        player.x -= 4.0;
     }
     else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT))
     {
-        circle.x += 4.0;
+        player.x += 4.0;
     }
 
    //if circle goes off the track
 
-    if (circle.x < -50 || circle.x > 350){
+    if (player.x < game.world.width/2.0-200 || player.x > game.world.width/2.0+200){
 
-        circle.destroy();
+        player.destroy();
     }
 
     // Limit offset to 20px max
