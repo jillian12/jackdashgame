@@ -7,7 +7,12 @@ var graphics;
 var circle;
 var player;
 var enemies = [];
-
+var score = 0;
+var scoreText;
+var gameTime;
+var enemyRate;
+var lastEnemy;
+var level = 1;
 
 var mainState = {
     preload: preload,
@@ -17,24 +22,33 @@ var mainState = {
 
 var enemy = {
     shape: 0,
-    speed: 1,
+    speed: 1.5,
     game: 0,
+    width: 30,
+    height: 30,
+    xvelocity: 100,
+    yvelocity: 100,
     setup: function(game){
+        this.width = (Math.random()* 40 +20)
+        this.height = this.width
         this.shape = game.add.graphics( (game.world.width / 2.0), game.world.height / 2.0 + 40);
         game.physics.arcade.enable(this.shape);
-        this.shape.body.width = 20;
-        this.shape.body.height = 20;
+        this.shape.body.width = this.width
+        this.shape.body.height = this.height
         this.game = game;
+        this.xvelocity = (Math.random()* 200 -100);
     },
     update: function(){
-        this.shape.y = this.shape.y + 1;
-        this.shape.x = this.shape.x + (Math.random()* 3 - 2);
+        // this.shape.y = this.shape.y + this.speed;
+        // this.shape.x = this.shape.x + (Math.random()* 3 - 2);
+        this.shape.body.velocity.x = this.xvelocity;
+        this.shape.body.velocity.y = this.yvelocity;
     },
     draw: function(){
         this.shape.clear();
         this.shape.lineStyle(2.0, 0x15c2d6, 1.0);
         this.shape.beginFill(0x15c2d6,0.5);
-        this.shape.drawRect(0 , 0 , 20, 20);
+        this.shape.drawRect(0 , 0 , this.width, this.height);
         game.debug.body(this.shape);
     }
 };
@@ -83,29 +97,41 @@ function create(){
     //Draw a circle
     circle = player.drawCircle(0, 0, 50);
     player.endFill();
-   /* game.physics.arcade.enable(player);*/
+    /* game.physics.arcade.enable(player);*/
+    scoreText = game.add.text(295, 16, '0', { fontSize: '64px', fill: '#00ff00'});
 
+    gameTime = Date.now();
+    lastEnemy = Date.now();
+    enemyRate = 2;
 }
 
 //We'll use the offset variable to keep track of how much we move each vertical line
 var offset = 0;
 
 function update(){
-
-    if (Math.random() < .01){
+    //enemy coming at different speeds
+    if (((Date.now() - lastEnemy)/1000) > enemyRate){
     enemy1 = Object.create(enemy);
     enemy1.setup(game);
     enemies.push(enemy1);
+    lastEnemy = Date.now();
     }
+
+    // if (((Date.now() - gameTime)/1000) > 10) {
+    // enemyRate = 1;
+    // }
+
+    level = (((Date.now() - gameTime)/1000) / 20) + 1 
+    console.log("level " + level);
+    enemyRate = 3.0 - level
+
     //Hold down the "r" key to reverse the line movement
     if (game.input.keyboard.isDown(Phaser.Keyboard.R)){
         offset += 1.0;
     }
     else{
         offset -= 1.0;
-    }    
-
-
+    }   
 
     //to move sprite left and right
 
@@ -163,18 +189,34 @@ function update(){
         graphics.lineTo((400 - lineOffset), -lineOffset);
     }
 
+    //loop for the enemies
     for(i = 0; i < enemies.length; i ++){
         enemies[i].update();
         enemies[i].draw();
         game.physics.arcade.overlap(enemies[i].shape, player, collisionHandler);
-    }
+        if (enemies[i].shape.y > game.world.height) {
+            score += 1;
+            scoreText.text = score;
+            enemies.splice(i, 1); 
+        }
+     }
 
     game.debug.body(player);
 
+//experimenting the start over function
+   /* if (game.physics.arcade.collide(player, enemies, collisionHandler)) {      
+        this.player.kill();      
+        game.state.start('Over');    
+    }*/
  
 }
 
     function collisionHandler (){
         console.log ("hello");
-        player.destroy()
+        player.destroy();
+        // game.state.start('Over');
+    }
+
+    function reset () {
+
     }
