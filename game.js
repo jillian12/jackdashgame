@@ -55,16 +55,26 @@ var enemy = {
 
 // Initialize Phaser
 game = new Phaser.Game(640, 480, Phaser.AUTO, 'gameDiv');
-
+ 
 // And finally we tell Phaser to add and start our 'main' state
 game.state.add('main', mainState);
 game.state.start('main');
 
 
 function preload(){
+
 }
 
 function create(){
+    text = game.add.text(160, 90, 'Use Arrow Keys', { fontSize: '42px', fill: '#dd00ff' });
+    setTimeout(function(){
+        text.setText("");
+    }, 3000);
+
+    
+    //this.load.image('background' , 'https://thumbs.dreamstime.com/z/cursor-arrow-keys-white-26213457.jpg');
+
+
     // This function is called after the preload function
     // Here we set up the game, display sprites, etc.
 
