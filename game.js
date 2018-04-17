@@ -127,11 +127,18 @@ function update(){
     lastEnemy = Date.now();
     }
 
+
+
     // if (((Date.now() - gameTime)/1000) > 10) {
     // enemyRate = 1;
     // }
 
-    level = (((Date.now() - gameTime)/1000) / 20) + 1 
+    //to create the "levels" of code, enemy's coming at different speeds
+    level = (((Date.now() - gameTime)/1000) / 25) + 1 
+    if (level > 2.5){
+        level = 2.5
+    }
+
     console.log("level " + level);
     enemyRate = 3.0 - level
 
