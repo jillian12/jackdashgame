@@ -10,6 +10,7 @@ var offset = 0;
 var enemies = [];
 var score = 0;
 var scoreText;
+var textTwo;
 var gameTime;
 var enemyRate;
 var lastEnemy;
@@ -52,7 +53,11 @@ var enemy = {
         this.shape.lineStyle(2.0, 0x15c2d6, 1.0);
         this.shape.beginFill(0x15c2d6,0.5);
         this.shape.drawRect(0 , 0 , this.width, this.height);
-        game.debug.body(this.shape);
+        // game.debug.body(this.shape);
+    },
+    death: function(){
+        this.shape.destroy();
+
     }
 };
 
@@ -74,6 +79,9 @@ function create(){
     setTimeout(function(){
         text.setText("");
     }, 3000);
+
+    //add reset text
+    textTwo = game.add.text(110, 90, ' ', { fontSize: '42px', fill: '#dd00ff', font: 'georgia',});
 
     // This function is called after the preload function
     // Here we set up the game, display sprites, etc.
@@ -134,7 +142,6 @@ function update(){
     if (level > 2.5){
         level = 2.5
     }
-    console.log("level " + level);
     enemyRate = 3.0 - level
 
     //Hold down the "j" key to reverse the line movement
@@ -144,6 +151,11 @@ function update(){
     else{
         offset -= 1.0;
     }   
+
+    //reset game
+    if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) && alive == false){
+        reset();
+    }
 
     //to move sprite left and right
     if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT))
@@ -158,8 +170,7 @@ function update(){
    //if circle goes off the track
     if (player.x < game.world.width/2.0-200 || player.x > game.world.width/2.0+200){
 
-        player.destroy();
-        alive = false;
+        death();
     }
 
     // Limit offset to 20px max
@@ -216,7 +227,7 @@ function update(){
         
      }
 
-    game.debug.body(player);
+    // game.debug.body(player);
 
 //experimenting the start over function
    /* if (game.physics.arcade.collide(player, enemies, collisionHandler)) {      
@@ -227,12 +238,33 @@ function update(){
 }
 
 function collisionHandler (){
-    console.log ("hello");
-    player.destroy();
+    death();
+}
+
+function death () {
+    player.exists = false;
     alive = false;
-    // game.state.start('Over');
+    textTwo.exists = true;
+    textTwo.text = 'Press Space To Restart';
+    //update score
+    if (score > highScore) {
+        highScore = score;
+        score = 0; 
+        highScoreText.text = 'High Score: ' + highScore;
+        scoreText.text = score;
+    };
+
 }
 
 function reset () {
-
+    textTwo.exists = false;
+    player.exists = true; 
+    for(i = 0; i < enemies.length; i ++){
+        enemies[i].death();
+    }
+    enemies = [];
+    console.log("reset");
+    alive = true;
+    player.x = 320;
+    player.y = 440;
 }
