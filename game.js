@@ -13,6 +13,7 @@ var gameTime;
 var enemyRate;
 var lastEnemy;
 var level = 1;
+var alive = true;
 
 var mainState = {
     preload: preload,
@@ -159,6 +160,7 @@ function update(){
     if (player.x < game.world.width/2.0-200 || player.x > game.world.width/2.0+200){
 
         player.destroy();
+        alive = false;
     }
 
     // Limit offset to 20px max
@@ -205,10 +207,14 @@ function update(){
         enemies[i].draw();
         game.physics.arcade.overlap(enemies[i].shape, player, collisionHandler);
         if (enemies[i].shape.y > game.world.height) {
-            score += 1;
-            scoreText.text = score;
-            enemies.splice(i, 1); 
+            if (alive == true) { 
+                score += 1;
+                scoreText.text = score;
+            }
+            enemies.splice(i, 1);  
+        
         }
+        
      }
 
     game.debug.body(player);
@@ -221,12 +227,13 @@ function update(){
  
 }
 
-    function collisionHandler (){
-        console.log ("hello");
-        player.destroy();
-        // game.state.start('Over');
-    }
+function collisionHandler (){
+    console.log ("hello");
+    player.destroy();
+    alive = false;
+    // game.state.start('Over');
+}
 
-    function reset () {
+function reset () {
 
-    }
+}
