@@ -6,6 +6,7 @@ var line;
 var graphics;
 var circle;
 var player;
+var offset = 0;
 var enemies = [];
 var score = 0;
 var scoreText;
@@ -13,6 +14,7 @@ var gameTime;
 var enemyRate;
 var lastEnemy;
 var level = 1;
+var highScore = 0;
 
 var mainState = {
     preload: preload,
@@ -66,25 +68,19 @@ function preload(){
 }
 
 function create(){
-    text = game.add.text(160, 90, 'Use Arrow Keys', { fontSize: '42px', fill: '#dd00ff' });
+    //add text that gives instructions to the user
+    text = game.add.text(160, 90, 'Use Arrow Keys', { fontSize: '42px', fill: '#dd00ff', font: 'georgia',});
     setTimeout(function(){
         text.setText("");
     }, 3000);
 
-    
-    //this.load.image('background' , 'https://thumbs.dreamstime.com/z/cursor-arrow-keys-white-26213457.jpg');
-
-
     // This function is called after the preload function
     // Here we set up the game, display sprites, etc.
-
     //Create a new graphics object to draw the moving lines
     //  Position it 200 pixels left of the center of our game world,
-    //  and at the bottom of our game world (game.world.height pixels)
+    // and at the bottom of our game world (game.world.height pixels)
     // Since we'll update the moving lines every frame, we only draw to this in our update function.
     graphics = game.add.graphics( (game.world.width / 2.0) - 200, game.world.height);
-
-    
 
     //Create a second graphics object to draw a floating circle in the upper left, for demonstration. 
     //  Since we're not dynamically updaing this, we can draw to it in our "create" function.
@@ -96,10 +92,8 @@ function create(){
     player.body.offset.x = -25;
     player.body.offset.y = -25;
 
-
     //Draw a 2px wide line, red, fully transparent
     player.lineStyle(2.0, 0xff0000, 1.0);
-
 
     //Fill our shape with a medium red
     player.beginFill(0x660000,0.5);
@@ -107,18 +101,25 @@ function create(){
     //Draw a circle
     circle = player.drawCircle(0, 0, 50);
     player.endFill();
-    /* game.physics.arcade.enable(player);*/
-    scoreText = game.add.text(295, 16, '0', { fontSize: '64px', fill: '#00ff00'});
 
+    //add the text for the score
+    scoreText = game.add.text(295, 16, '0', { fontSize: '64px', fill: '#00ff00'});
+    highScoreText = game.add.text (15, 16, 'High Score: 0', { fontSize: '25px', fill: '#00ff00', font: 'georgia',});
+    
+    //give the definition of the variables for the enemy spawn time
     gameTime = Date.now();
     lastEnemy = Date.now();
     enemyRate = 2;
 }
 
-//We'll use the offset variable to keep track of how much we move each vertical line
-var offset = 0;
-
 function update(){
+
+    // // update best score
+    // if (score > highScore) {
+    //     highScore = score;
+    //     score = 0;
+    // }
+
     //enemy coming at different speeds
     if (((Date.now() - lastEnemy)/1000) > enemyRate){
     enemy1 = Object.create(enemy);
@@ -127,23 +128,16 @@ function update(){
     lastEnemy = Date.now();
     }
 
-
-
-    // if (((Date.now() - gameTime)/1000) > 10) {
-    // enemyRate = 1;
-    // }
-
     //to create the "levels" of code, enemy's coming at different speeds
     level = (((Date.now() - gameTime)/1000) / 25) + 1 
     if (level > 2.5){
         level = 2.5
     }
-
     console.log("level " + level);
     enemyRate = 3.0 - level
 
-    //Hold down the "r" key to reverse the line movement
-    if (game.input.keyboard.isDown(Phaser.Keyboard.R)){
+    //Hold down the "j" key to reverse the line movement
+    if (game.input.keyboard.isDown(Phaser.Keyboard.J)){
         offset += 1.0;
     }
     else{
@@ -151,7 +145,6 @@ function update(){
     }   
 
     //to move sprite left and right
-
     if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT))
     {
         player.x -= 4.0;
@@ -162,7 +155,6 @@ function update(){
     }
 
    //if circle goes off the track
-
     if (player.x < game.world.width/2.0-200 || player.x > game.world.width/2.0+200){
 
         player.destroy();
