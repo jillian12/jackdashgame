@@ -78,7 +78,7 @@ function create(){
     text = game.add.text(160, 90, 'Use Arrow Keys', { fontSize: '42px', fill: '#dd00ff', font: 'georgia',});
     setTimeout(function(){
         text.setText("");
-    }, 3000);
+    }, 2550);
 
     //add reset text
     textTwo = game.add.text(110, 90, ' ', { fontSize: '42px', fill: '#dd00ff', font: 'georgia',});
@@ -123,14 +123,8 @@ function create(){
 
 function update(){
 
-    // // update best score
-    // if (score > highScore) {
-    //     highScore = score;
-    //     score = 0;
-    // }
-
     //enemy coming at different speeds
-    if (((Date.now() - lastEnemy)/1000) > enemyRate){
+    if ((((Date.now() - lastEnemy)/1000) > enemyRate) && (alive == true)){
     enemy1 = Object.create(enemy);
     enemy1.setup(game);
     enemies.push(enemy1);
@@ -227,31 +221,37 @@ function update(){
         
      }
 
-    // game.debug.body(player);
+     if (alive == false) {
+        death();
+     }
 
-//experimenting the start over function
-   /* if (game.physics.arcade.collide(player, enemies, collisionHandler)) {      
-        this.player.kill();      
-        game.state.start('Over');    
-    }*/
+    // game.debug.body(player);
  
 }
 
 function collisionHandler (){
-    death();
+    alive = false;
 }
 
 function death () {
     player.exists = false;
     alive = false;
     textTwo.exists = true;
-    textTwo.text = 'Press Space To Restart';
+    textTwo.text = 'Press Space To Restart';   
+    for(i = 0; i < enemies.length; i ++){
+        enemies[i].death();
+    }
+    enemies = [];
+
     //update score
+    score = 0;
+    scoreText.text = score;
     if (score > highScore) {
         highScore = score;
         score = 0; 
         highScoreText.text = 'High Score: ' + highScore;
         scoreText.text = score;
+
     };
 
 }
@@ -259,12 +259,14 @@ function death () {
 function reset () {
     textTwo.exists = false;
     player.exists = true; 
-    for(i = 0; i < enemies.length; i ++){
-        enemies[i].death();
-    }
-    enemies = [];
-    console.log("reset");
     alive = true;
     player.x = 320;
     player.y = 440;
+    text.setText("Use Arrow Keys");
+    setTimeout(function(){
+        text.setText("");
+    }, 2550);
+    gameTime = Date.now();
+    lastEnemy = Date.now();
+    enemyRate = 2;
 }
