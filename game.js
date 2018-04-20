@@ -40,7 +40,7 @@ var enemy = {
         this.shape.body.width = this.width
         this.shape.body.height = this.height
         this.game = game;
-        this.xvelocity = (Math.random()* 200 -100);
+        this.xvelocity = (Math.random()* 200 -130);
     },
     update: function(){
         // this.shape.y = this.shape.y + this.speed;
@@ -75,7 +75,7 @@ function preload(){
 
 function create(){
     //add text that gives instructions to the user
-    text = game.add.text(160, 90, 'Use Arrow Keys', { fontSize: '42px', fill: '#dd00ff', font: 'georgia',});
+    text = game.add.text(170, 90, 'Use Arrow Keys', { fontSize: '42px', fill: '#dd00ff', font: 'georgia',});
     setTimeout(function(){
         text.setText("");
     }, 2550);
@@ -112,7 +112,7 @@ function create(){
     player.endFill();
 
     //add the text for the score
-    scoreText = game.add.text(295, 16, '0', { fontSize: '64px', fill: '#00ff00'});
+    scoreText = game.add.text(285, 16, '0', { fontSize: '64px', fill: '#00ff00'});
     highScoreText = game.add.text (15, 16, 'High Score: 0', { fontSize: '25px', fill: '#00ff00', font: 'georgia',});
     
     //give the definition of the variables for the enemy spawn time
@@ -234,6 +234,7 @@ function collisionHandler (){
 }
 
 function death () {
+    text.setText("");
     player.exists = false;
     alive = false;
     textTwo.exists = true;
