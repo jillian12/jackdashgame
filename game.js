@@ -17,7 +17,7 @@ var lastEnemy;
 var level = 1;
 var alive = true;
 var highScore = 0;
-
+var bass;
 var mainState = {
     preload: preload,
     create: create,
@@ -70,10 +70,15 @@ game.state.start('main');
 
 
 function preload(){
+    game.load.audio('bass', 'mp3audio/jackdashdrums.mp3');
 
 }
 
 function create(){
+    bass = game.add.audio('bass');
+    sounds = [ bass]
+    game.sound.setDecodedCallback(sounds, startsound, this);
+
     //add text that gives instructions to the user
     text = game.add.text(160, 90, 'Use Arrow Keys', { fontSize: '42px', fill: '#dd00ff', font: 'georgia',});
     setTimeout(function(){
@@ -267,4 +272,8 @@ function reset () {
     alive = true;
     player.x = 320;
     player.y = 440;
+}
+function startsound () {
+    bass.loopFull(0.6);
+
 }
