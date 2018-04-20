@@ -40,7 +40,7 @@ var enemy = {
         this.shape.body.width = this.width
         this.shape.body.height = this.height
         this.game = game;
-        this.xvelocity = (Math.random()* 200 -100);
+        this.xvelocity = (Math.random()* 200 -130);
     },
     update: function(){
         // this.shape.y = this.shape.y + this.speed;
@@ -80,10 +80,10 @@ function create(){
     game.sound.setDecodedCallback(sounds, startsound, this);
 
     //add text that gives instructions to the user
-    text = game.add.text(160, 90, 'Use Arrow Keys', { fontSize: '42px', fill: '#dd00ff', font: 'georgia',});
+    text = game.add.text(170, 90, 'Use Arrow Keys', { fontSize: '42px', fill: '#dd00ff', font: 'georgia',});
     setTimeout(function(){
         text.setText("");
-    }, 3000);
+    }, 2550);
 
     //add reset text
     textTwo = game.add.text(110, 90, ' ', { fontSize: '42px', fill: '#dd00ff', font: 'georgia',});
@@ -117,7 +117,7 @@ function create(){
     player.endFill();
 
     //add the text for the score
-    scoreText = game.add.text(295, 16, '0', { fontSize: '64px', fill: '#00ff00'});
+    scoreText = game.add.text(285, 16, '0', { fontSize: '64px', fill: '#00ff00'});
     highScoreText = game.add.text (15, 16, 'High Score: 0', { fontSize: '25px', fill: '#00ff00', font: 'georgia',});
     
     //give the definition of the variables for the enemy spawn time
@@ -128,14 +128,8 @@ function create(){
 
 function update(){
 
-    // // update best score
-    // if (score > highScore) {
-    //     highScore = score;
-    //     score = 0;
-    // }
-
     //enemy coming at different speeds
-    if (((Date.now() - lastEnemy)/1000) > enemyRate){
+    if ((((Date.now() - lastEnemy)/1000) > enemyRate) && (alive == true)){
     enemy1 = Object.create(enemy);
     enemy1.setup(game);
     enemies.push(enemy1);
@@ -173,7 +167,7 @@ function update(){
     }
 
    //if circle goes off the track
-    if (player.x < game.world.width/2.0-200 || player.x > game.world.width/2.0+200){
+    if (player.x < game.world.width/2.0-197 || player.x > game.world.width/2.0+197){
 
         death();
     }
@@ -232,31 +226,38 @@ function update(){
         
      }
 
-    // game.debug.body(player);
+     if (alive == false) {
+        death();
+     }
 
-//experimenting the start over function
-   /* if (game.physics.arcade.collide(player, enemies, collisionHandler)) {      
-        this.player.kill();      
-        game.state.start('Over');    
-    }*/
+    // game.debug.body(player);
  
 }
 
 function collisionHandler (){
-    death();
+    alive = false;
 }
 
 function death () {
+    text.setText("");
     player.exists = false;
     alive = false;
     textTwo.exists = true;
-    textTwo.text = 'Press Space To Restart';
+    textTwo.text = 'Press Space To Restart';   
+    for(i = 0; i < enemies.length; i ++){
+        enemies[i].death();
+    }
+    enemies = [];
+
     //update score
+    score = 0;
+    scoreText.text = score;
     if (score > highScore) {
         highScore = score;
         score = 0; 
         highScoreText.text = 'High Score: ' + highScore;
         scoreText.text = score;
+
     };
 
 }
@@ -264,14 +265,16 @@ function death () {
 function reset () {
     textTwo.exists = false;
     player.exists = true; 
-    for(i = 0; i < enemies.length; i ++){
-        enemies[i].death();
-    }
-    enemies = [];
-    console.log("reset");
     alive = true;
     player.x = 320;
     player.y = 440;
+    text.setText("Use Arrow Keys");
+    setTimeout(function(){
+        text.setText("");
+    }, 2550);
+    gameTime = Date.now();
+    lastEnemy = Date.now();
+    enemyRate = 2;
 }
 function startsound () {
     bass.loopFull(0.6);
