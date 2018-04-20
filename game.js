@@ -162,7 +162,7 @@ function update(){
     }
 
    //if circle goes off the track
-    if (player.x < game.world.width/2.0-200 || player.x > game.world.width/2.0+200){
+    if (player.x < game.world.width/2.0-197 || player.x > game.world.width/2.0+197){
 
         death();
     }
