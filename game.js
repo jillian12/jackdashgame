@@ -68,8 +68,8 @@ var enemy = {
 
 function preload(){
     game.load.audio('bass', 'mp3audio/jackdashdrums.mp3');
-    // game.load.image('circle', 'assets/images/particle3.png');
-    // game.load.image('enemy', 'assets/images/particle2.png');
+    game.load.image('enemy1', 'img/enemy1.png');
+    game.load.image('circle', 'img/circle.png');
 
 }
 
@@ -123,7 +123,7 @@ function create(){
     //for the particles for the collision
     emitter = game.add.emitter(0, 0, 100);
 
-    emitter.makeParticles('circle');
+    emitter.makeParticles('enemy1');
     emitter.gravity = 800;
     emitter.minParticleAlpha = 0.1;
     emitter.maxParticleAlpha = 0.8;
@@ -132,16 +132,7 @@ function create(){
     emitter.minParticleScale = 2.0;
     emitter.minParticleSpeed = new Phaser.Point(-400, -400);
     emitter.maxParticleSpeed = new Phaser.Point(300, 300);
-
-
-    emitter2 = game.add.emitter(0, 0, 100);
-    emitter2.makeParticles('enemy');
-    emitter2.gravity = -200;
-    emitter2.minParticleAlpha = 0.1;
-    emitter2.maxParticleAlpha = 0.5;
-    emitter2.minParticleScale = 2.0;
-    emitter2.minParticleScale = 5.0;
-
+    
     //add the text for the score
     scoreText = game.add.text(285, 16, '0', { fontSize: '64px', fill: '#00ff00'});
     highScoreText = game.add.text (15, 16, 'High Score: 0', { fontSize: '25px', fill: '#00ff00', font: 'georgia',});
