@@ -18,6 +18,7 @@ var level = 1;
 var alive = true;
 var highScore = 0;
 var bass;
+var explodesound;
 var mainState = {
     preload: preload,
     create: create,
@@ -71,12 +72,15 @@ game.state.start('main');
 
 function preload(){
     game.load.audio('bass', 'mp3audio/jackdashdrums.mp3');
+    game.load.audio('explode', 'mp3audio/DJ-Lazer-2.mp3');
 
 }
 
 function create(){
     bass = game.add.audio('bass');
-    sounds = [ bass]
+    explodesound = game.add.audio('explode')
+    explodesound.loop = false;
+    sounds = [ bass, explodesound];
     game.sound.setDecodedCallback(sounds, startsound, this);
 
     //add text that gives instructions to the user
@@ -235,6 +239,7 @@ function update(){
 }
 
 function collisionHandler (){
+    explodesound.play();
     alive = false;
 }
 
