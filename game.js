@@ -111,10 +111,10 @@ function create(){
     player.body.offset.y = -25;
 
     //Draw a 2px wide line, red, fully transparent
-    player.lineStyle(2.0, 0xff0000, 1.0);
+    player.lineStyle(2.0, 0xdd00ff, 1.0);
 
     //Fill our shape with a medium red
-    player.beginFill(0x660000,0.5);
+    player.beginFill(0xf09eff,0.5);
 
     //Draw a circle
     circle = player.drawCircle(0, 0, 50);
