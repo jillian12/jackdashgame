@@ -11,6 +11,8 @@ var enemies = [];
 var score = 0;
 var scoreText;
 var textTwo;
+var emitter;
+var emitter2;
 var gameTime;
 var enemyRate;
 var lastEnemy;
@@ -24,6 +26,13 @@ var mainState = {
     create: create,
     update: update
 };
+
+// Initialize Phaser
+game = new Phaser.Game(640, 480, Phaser.AUTO, 'gameDiv');
+ 
+// And finally we tell Phaser to add and start our 'main' state
+game.state.add('main', mainState);
+game.state.start('main');
 
 var enemy = {
     shape: 0,
@@ -44,8 +53,6 @@ var enemy = {
         this.xvelocity = (Math.random()* 225 -120);
     },
     update: function(){
-        // this.shape.y = this.shape.y + this.speed;
-        // this.shape.x = this.shape.x + (Math.random()* 3 - 2);
         this.shape.body.velocity.x = this.xvelocity;
         this.shape.body.velocity.y = this.yvelocity;
     },
@@ -54,29 +61,29 @@ var enemy = {
         this.shape.lineStyle(2.0, 0x15c2d6, 1.0);
         this.shape.beginFill(0x15c2d6,0.5);
         this.shape.drawRect(0 , 0 , this.width, this.height);
-        // game.debug.body(this.shape);
     },
     death: function(){
         this.shape.destroy();
-
     }
 };
 
-// Initialize Phaser
-game = new Phaser.Game(640, 480, Phaser.AUTO, 'gameDiv');
- 
-// And finally we tell Phaser to add and start our 'main' state
-game.state.add('main', mainState);
-game.state.start('main');
-
-
 function preload(){
     game.load.audio('bass', 'mp3audio/jackdashdrums.mp3');
+
     game.load.audio('explode', 'mp3audio/DJ-Lazer-2.mp3');
+
+    game.load.image('enemy1', 'img/enemy1.png');
+    game.load.image('circle', 'img/circle.png');
+
 
 }
 
 function create(){
+
+    //add physics for the emitters
+    game.physics.startSystem(Phaser.Physics.ARCADE);
+
+    //set the sound for jackdash
     bass = game.add.audio('bass');
     explodesound = game.add.audio('explode')
     explodesound.loop = false;
@@ -94,14 +101,14 @@ function create(){
 
     // This function is called after the preload function
     // Here we set up the game, display sprites, etc.
-    //Create a new graphics object to draw the moving lines
-    //  Position it 200 pixels left of the center of our game world,
+    // Create a new graphics object to draw the moving lines
+    // Position it 200 pixels left of the center of our game world,
     // and at the bottom of our game world (game.world.height pixels)
     // Since we'll update the moving lines every frame, we only draw to this in our update function.
     graphics = game.add.graphics( (game.world.width / 2.0) - 200, game.world.height);
 
     //Create a second graphics object to draw a floating circle in the upper left, for demonstration. 
-    //  Since we're not dynamically updaing this, we can draw to it in our "create" function.
+    //For the collision of the player 
     player = game.add.graphics( 320, 440);
     game.physics.arcade.enable(player);
     player.body.width = 50;
@@ -111,15 +118,28 @@ function create(){
     player.body.offset.y = -25;
 
     //Draw a 2px wide line, red, fully transparent
-    player.lineStyle(2.0, 0xff0000, 1.0);
+    player.lineStyle(2.0, 0xdd00ff, 1.0);
 
     //Fill our shape with a medium red
-    player.beginFill(0x660000,0.5);
+    player.beginFill(0xf09eff,0.5);
 
     //Draw a circle
     circle = player.drawCircle(0, 0, 50);
     player.endFill();
 
+    //for the particles for the collision
+    emitter = game.add.emitter(0, 0, 100);
+
+    emitter.makeParticles('enemy1');
+    emitter.gravity = 800;
+    emitter.minParticleAlpha = 0.1;
+    emitter.maxParticleAlpha = 0.8;
+
+    emitter.minParticleScale = 0.5;
+    emitter.minParticleScale = 2.0;
+    emitter.minParticleSpeed = new Phaser.Point(-400, -400);
+    emitter.maxParticleSpeed = new Phaser.Point(300, 300);
+    
     //add the text for the score
     scoreText = game.add.text(285, 16, '0', { fontSize: '64px', fill: '#00ff00'});
     highScoreText = game.add.text (15, 16, 'High Score: 0', { fontSize: '25px', fill: '#00ff00', font: 'georgia',});
@@ -132,7 +152,7 @@ function create(){
 
 function update(){
 
-    //enemy coming at different speeds
+    //enemy spawning, creating an enemy after the other enemy goes
     if ((((Date.now() - lastEnemy)/1000) > enemyRate) && (alive == true)){
     enemy1 = Object.create(enemy);
     enemy1.setup(game);
@@ -140,11 +160,13 @@ function update(){
     lastEnemy = Date.now();
     }
 
-    //to create the "levels" of code, enemy's coming at different speeds
+    //to create the "levels" of code, enemies coming at different speeds
+    //number of seconds the game has been running to determine the level of the game 
     level = (((Date.now() - gameTime)/1000) / 25) + 1 
     if (level > 2.5){
         level = 2.5
     }
+    //increase the enemy speed
     enemyRate = 3.0 - level
 
     //Hold down the "j" key to reverse the line movement
@@ -160,7 +182,7 @@ function update(){
         reset();
     }
 
-    //to move sprite left and right
+    //to move jackjack left and right
     if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT))
     {
         player.x -= 4.0;
@@ -170,13 +192,15 @@ function update(){
         player.x += 4.0;
     }
 
-   //if circle goes off the track
+   //if jackjack goes off the track
     if (player.x < game.world.width/2.0-197 || player.x > game.world.width/2.0+197){
 
         death();
     }
 
     // Limit offset to 20px max
+    //% is a modulus that means remainder
+    //it means divide offset by 20 and leave remainder
     offset = offset % 20;
 
     //Clear the graphics object -- note that we are doing this is the update function,
@@ -241,6 +265,10 @@ function update(){
 function collisionHandler (){
     explodesound.play();
     alive = false;
+    emitter.x = player.x;
+    emitter.y = player.y;
+    emitter.start(true, 2000, null, 8000);
+
 }
 
 function death () {
@@ -283,7 +311,10 @@ function reset () {
     lastEnemy = Date.now();
     enemyRate = 2;
 }
+
 function startsound () {
     bass.loopFull(0.6);
 
 }
+
+
